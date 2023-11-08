@@ -5,8 +5,68 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="BidDetails" Height="450" Width="800">
+        Title="BidDetails" Height="400" Width="600">
     <Grid>
-        
+        <StackPanel Orientation="Vertical">
+        <Label FontSize="20" FontWeight="DemiBold" HorizontalContentAlignment="Center">Item Search Result/Bid Screen</Label>
+        <StackPanel Orientation="Horizontal" Height="Auto" VerticalAlignment="Top">
+            <StackPanel Width="300" VerticalAlignment="Top" Orientation="Vertical" HorizontalAlignment="Left" Height="Auto" Margin="0 40">
+                <StackPanel Orientation="Horizontal">
+                    <Label>Bidder number: </Label>
+                    <Label x:Name="txtBidId"></Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Type name: </Label>
+                    <Label x:Name="txtTypeName"></Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Item number: </Label>
+                    <Label x:Name="txtItemId"></Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Item description: </Label>
+                    <Label x:Name="txtItemDescription"></Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Current price: </Label>
+                    <Label x:Name="txtCurrentPrice"></Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>End date time: </Label>
+                    <Label x:Name="txtEndDateTime"></Label>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Width="300" VerticalAlignment="Top" Orientation="Vertical" HorizontalAlignment="Left" Height="Auto" Margin="0 40">
+                <StackPanel Orientation="Horizontal">
+                    <Label>Bidder:</Label>
+                    <Label x:Name="txtBidderName"></Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Item name:</Label>
+                    <Label x:Name="txtItemName"></Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Seller:</Label>
+                    <Label x:Name="txtSellerName"></Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Minimum bid increment:</Label>
+                    <Label x:Name="txtMinimumBidIncrement"></Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Time remaining:</Label>
+                    <Label x:Name="txtTimeRemaining"></Label>
+                </StackPanel>
+            </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Bid Price:</Label>
+                <TextBox x:Name="txtBidPrice" Width="220"></TextBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button Width="100" Margin="60 20 0 0" Click="Button_Click">Bid</Button>
+                <Button Width="100" Margin="20 20 0 0" Click="Button_Click_1">Cancel</Button>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>
