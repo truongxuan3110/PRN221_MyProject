@@ -226,6 +226,20 @@ namespace Client
                 dbContext.Items.Add(newItem);
                 dbContext.SaveChanges();
                 MessageBox.Show("Added new Item");
+
+                int newItemId = newItem.ItemId;
+                Bid bid = new Bid
+                {
+                    ItemId = newItemId,
+                    BidderId = newItem.SellerId,
+                    BidDateTime = DateTime.Now,
+                    BidPrice = newItem.CurrentPrice
+                };
+
+                dbContext.Bids.Add(bid);
+                dbContext.SaveChanges(true);
+               
+
                 addItemGrid.Visibility = Visibility.Collapsed;
                 LoadListItemScreen();
             }
