@@ -230,5 +230,160 @@ namespace Client
                 LoadListItemScreen();
             }
         }
+        List<string> filterTime = new List<string>()
+            {
+                "Oldest -> Newest",
+                "Newest -> Oldest"
+            };
+        private void ListBidsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            lbName.Content = member.Name;
+            cboTimeFilter.ItemsSource = filterTime;
+            cboTimeFilter.SelectedIndex = 0;
+            listBids.ItemsSource = dbContext.Bids.Include(x => x.Item).Where(x=>x.BidderId==member.MemberId).OrderBy(b => b.BidDateTime).ToList();
+            listAllItem.Visibility = Visibility.Collapsed;
+            listBidsGrid.Visibility = Visibility.Visible;
+        }
+
+        private void searchBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtItemSearch.Text))
+            {
+                if (cboTimeFilter.SelectedIndex == 0)
+                {
+                    listBids.ItemsSource = dbContext.Bids.Include(x => x.Item).Where(x => x.Item.ItemName.Contains(txtItemSearch.Text) && x.BidderId == member.MemberId).OrderBy(b => b.BidDateTime).ToList();
+                }
+                else
+                {
+                    listBids.ItemsSource = dbContext.Bids.Include(x => x.Item).Where(x => x.Item.ItemName.Contains(txtItemSearch.Text) && x.BidderId == member.MemberId).OrderByDescending(b => b.BidDateTime).ToList();
+                }
+
+            }
+        }
+        private void cboTimeFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cboTimeFilter.SelectedIndex == 0)
+            {
+                if (!string.IsNullOrEmpty(txtItemSearch.Text))
+                {
+                    listBids.ItemsSource = dbContext.Bids.Include(x => x.Item).Where(x => x.Item.ItemName.Contains(txtItemSearch.Text) && x.BidderId == member.MemberId).OrderBy(b => b.BidDateTime).ToList();
+                }
+                else
+                {
+                    listBids.ItemsSource = dbContext.Bids.Include(x => x.Item).Where(x => x.BidderId == member.MemberId).OrderBy(b => b.BidDateTime).ToList();
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(txtItemSearch.Text))
+                {
+                    listBids.ItemsSource = dbContext.Bids.Include(x => x.Item).Where(x => x.Item.ItemName.Contains(txtItemSearch.Text) && x.BidderId == member.MemberId).OrderByDescending(b => b.BidDateTime).ToList();
+                }
+                else
+                {
+                    listBids.ItemsSource = dbContext.Bids.Include(x => x.Item).Where(x => x.BidderId == member.MemberId).OrderByDescending(b => b.BidDateTime).ToList();
+                }
+            }
+        }
+
+        private void cancelListBidsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            listBidsGrid.Visibility = Visibility.Collapsed;
+            LoadListItemScreen();
+        }
+
+        private void lvItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(lvItems.SelectedItem is Item itemSelected)
+            {
+                listAllItem.Visibility = Visibility.Collapsed;
+                bidDetailsGrid.Visibility = Visibility.Visible;
+                LoadDataBidDetails(itemSelected.ItemId);
+            }
+            else
+            {
+                Console.WriteLine("Lỗi");
+            }
+        }
+
+        private void LoadDataBidDetails(int itemId)
+        {
+            Item item = dbContext.Items.SingleOrDefault(x => x.ItemId == itemId);
+            Bid bid = dbContext.Bids.SingleOrDefault(x => x.ItemId == itemId && x.BidPrice == item.CurrentPrice);
+            Member bidder = dbContext.Members.SingleOrDefault(x => x.MemberId == bid.BidderId);
+            Member seller = dbContext.Members.SingleOrDefault(x => x.MemberId == item.SellerId);
+            ItemType itemType = dbContext.ItemTypes.SingleOrDefault(x => x.ItemTypeId == item.ItemTypeId);
+
+            txtBidId.Content = bid.BidId;
+            txtBidderName.Content = bidder.Name;
+            txtTypeName.Content = itemType.ItemTypeName;
+            txtItemId.Content = item.ItemId;
+            txtItemName.Content = item.ItemName;
+            txtItemDescription.Content = item.ItemDescription;
+            txtSellerName.Content = seller.Name;
+            txtCurrentPrice.Content = item.CurrentPrice;
+            txtMinimumBidIncrement.Content = item.MinimumBidIncrement;
+            txtEndDateTime.Content = item.EndDateTime;
+            txtTimeRemaining.Content = Math.Round((item.EndDateTime - DateTime.Now).Value.TotalHours) >= 0 ? (Math.Round((item.EndDateTime - DateTime.Now).Value.TotalHours) + " hours") : (0 + " hours");
+        }
+
+        private void bidBtn_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Item item = dbContext.Items.SingleOrDefault(x => x.ItemId == int.Parse(txtItemId.Content.ToString()));
+                if (item != null)
+                {
+                    if (Math.Round((item.EndDateTime - DateTime.Now).Value.TotalHours) >= 0)
+                    {
+                        if (!string.IsNullOrEmpty(txtBidPrice.Text))
+                        {
+                            decimal bidPrice;
+                            if (decimal.TryParse(txtBidPrice.Text, out bidPrice))
+                            {
+                                if (bidPrice >= item.CurrentPrice + item.MinimumBidIncrement)
+                                {
+                                    item.CurrentPrice = bidPrice;
+                                    dbContext.Items.Update(item);
+
+                                    Bid bid = new Bid();
+                                    bid.ItemId = item.ItemId;
+                                    bid.BidderId = 1;
+                                    bid.BidDateTime = DateTime.Now;
+                                    bid.BidPrice = bidPrice;
+                                    dbContext.Bids.Add(bid);
+
+                                    dbContext.SaveChanges();
+                                    LoadDataBidDetails(item.ItemId);
+                                    MessageBox.Show($"Bidded successfull", "Bid Item");
+                                }
+                                else
+                                {
+                                    MessageBox.Show($"Bid Price must be equal to or greater than the “Current price + Minimum_bid_increment”", "Bid Item");
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show($"Bid Price must be is a number", "Bid Item");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Auction time has expired", "Bid Item");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Bid Item");
+            }
+        }
+
+        private void bidDetailsCancelBtn_Click(object sender, RoutedEventArgs e)
+        {
+            bidDetailsGrid.Visibility = Visibility.Collapsed;
+            LoadListItemScreen();
+        }
     }
 }
