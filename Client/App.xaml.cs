@@ -22,13 +22,13 @@ namespace Client
         public App()
         {
             var service = new ServiceCollection();
-            service.AddSingleton<ListBids>();
+            service.AddSingleton<BidDetails>();
             service.AddSingleton<PRN221_ProjectContext>();
             provider = service.BuildServiceProvider();
         }
         protected override void OnStartup(StartupEventArgs e)
         {
-            var mainWindow = provider.GetService<ListBids>();
+            var mainWindow = provider.GetService<BidDetails>();
             mainWindow.Show();
         }
     }

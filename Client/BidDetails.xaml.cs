@@ -46,7 +46,7 @@ namespace Client
             txtCurrentPrice.Content = item.CurrentPrice;
             txtMinimumBidIncrement.Content = item.MinimumBidIncrement;
             txtEndDateTime.Content = item.EndDateTime;
-            txtTimeRemaining.Content = Math.Round((item.EndDateTime - DateTime.Now).Value.TotalHours) >= 0 ? Math.Round((item.EndDateTime - DateTime.Now).Value.TotalHours) : 0 + " hours";
+            txtTimeRemaining.Content = Math.Round((item.EndDateTime - DateTime.Now).Value.TotalHours) >= 0 ? (Math.Round((item.EndDateTime - DateTime.Now).Value.TotalHours)+" hours") : (0 + " hours");
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -60,26 +60,33 @@ namespace Client
                     {
                         if (!string.IsNullOrEmpty(txtBidPrice.Text))
                         {
-                            int bidPrice = int.Parse(txtBidPrice.Text);
-                            if (bidPrice >= item.CurrentPrice + item.MinimumBidIncrement)
+                            decimal bidPrice;
+                            if(decimal.TryParse(txtBidPrice.Text, out bidPrice))
                             {
-                                item.CurrentPrice = bidPrice;
-                                _context.Items.Update(item);
+                                if (bidPrice >= item.CurrentPrice + item.MinimumBidIncrement)
+                                {
+                                    item.CurrentPrice = bidPrice;
+                                    _context.Items.Update(item);
 
-                                Bid bid = new Bid();
-                                bid.ItemId = item.ItemId;
-                                bid.BidderId = 1;
-                                bid.BidDateTime = DateTime.Now;
-                                bid.BidPrice = bidPrice;
-                                _context.Bids.Add(bid);
+                                    Bid bid = new Bid();
+                                    bid.ItemId = item.ItemId;
+                                    bid.BidderId = 1;
+                                    bid.BidDateTime = DateTime.Now;
+                                    bid.BidPrice = bidPrice;
+                                    _context.Bids.Add(bid);
 
-                                _context.SaveChanges();
-                                LoadData();
-                                MessageBox.Show($"Bidded successfull", "Bid Item");
+                                    _context.SaveChanges();
+                                    LoadData();
+                                    MessageBox.Show($"Bidded successfull", "Bid Item");
+                                }
+                                else
+                                {
+                                    MessageBox.Show($"Bid Price must be equal to or greater than the “Current price + Minimum_bid_increment”", "Bid Item");
+                                }
                             }
                             else
                             {
-                                MessageBox.Show($"Bid Price must be equal to or greater than the “Current price + Minimum_bid_increment”", "Bid Item");
+                                MessageBox.Show($"Bid Price must be is a number", "Bid Item");
                             }
                         }
                     }
