@@ -199,8 +199,8 @@ namespace Client
                 MessageBox.Show("Enddate must be after current time!");
                 return null;
             }
-            int currentPrice = 0;
-            if(!int.TryParse(tbCurrentPrice.Text, out currentPrice))
+            decimal currentPrice = 0;
+            if(!decimal.TryParse(tbCurrentPrice.Text, out currentPrice))
             {
                 MessageBox.Show("Invalid format currentPrice!");
                 return null;
