@@ -29,9 +29,19 @@ namespace Server
         {
             InitializeComponent();
             dbContext = new PRN221_ProjectContext();
-            CheckAndSendEmails();
+
+            // Configure JSON serialization to ignore reference loops globally
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                // Add other settings if needed
+            };
+
             // Tạo một luồng mới để lắng nghe kết nối
             Task.Factory.StartNew(() => StartListen());
+
+
+            CheckAndSendEmails();
         }
 
 
@@ -46,9 +56,10 @@ namespace Server
                 {
                     Socket socketForServer = tcpListener.AcceptSocket();
 
+
+
                     // Mỗi kết nối từ client được xử lý trong một Task riêng biệt
                     Task.Run(() => Runserver(socketForServer));
-                   
                 }
             }
             catch (Exception ex)
@@ -63,7 +74,7 @@ namespace Server
             StreamWriter streamWriter = null;
             StreamReader streamReader = null;
             bool isCloseConnection = false;
-            
+
             try
             {
                 networkStream = new NetworkStream(socket);
@@ -79,7 +90,7 @@ namespace Server
                     string[] loginInfo = loginRequest.Split('|');
                     string email = loginInfo[1];
                     string password = loginInfo[2];
-                    
+                    //sendmail();
                     // Kiểm tra tài khoản trong cơ sở dữ liệu
                     var member = CheckAccount(email, password);
 
@@ -105,6 +116,7 @@ namespace Server
                         {
                             if (member != null)
                             {
+
                                 ReceiveRequestFromClient(socket);
                                 isCloseConnection = false;
                             }
@@ -134,7 +146,7 @@ namespace Server
         {
             try
             {
-                //// Kiểm tra xem kết nối đã đóng chưa
+                ////// Kiểm tra xem kết nối đã đóng chưa
                 //if (socket.Poll(10, SelectMode.SelectRead) && socket.Available == 0)
                 //{
                 //    // Nếu kết nối đã đóng, thì thực hiện kết nối lại
@@ -150,18 +162,10 @@ namespace Server
                     using (StreamReader streamReader = new StreamReader(networkStream))
                     {
 
-
                         string requestFromClient = streamReader.ReadLine();
                         if (requestFromClient != null)
                         {
-                            Console.WriteLine(requestFromClient);
                             string[] requestInfo = requestFromClient.Split('|');
-                            //if (requestInfo[0].Equals("GetListItemType"))
-                            //{
-                            //    Console.WriteLine(requestInfo[0]);
-                            //    GetListItemType(socket);
-                            //}
-                            //else
                             if (requestInfo[0].Equals("AddNewItem"))
                             {
                                 string jsonItem = requestInfo[1];
@@ -225,49 +229,15 @@ namespace Server
                             Console.WriteLine("requestFromClient is null");
                         }
                     }
-                    //  }
                 }
+                // }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ahuhu. An server error occurred while ReceiveRequestFromClient: {ex.Message}");
+                Console.WriteLine($"huhu. An server error occurred while ReceiveRequestFromClient: {ex.Message}");
                 Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
             }
         }
-
-        //private void GetListItemType(Socket socket)
-        //{
-        //    try
-        //    {
-
-        //        using (NetworkStream networkStream = new NetworkStream(socket))
-        //        using (StreamWriter streamWriter = new StreamWriter(networkStream))
-        //        using (StreamReader streamReader = new StreamReader(networkStream))
-        //        {
-
-        //            List<ItemType> itemTypes = dbContext.ItemTypes.ToList();
-
-        //            // Configure the JsonSerializer to handle reference loops
-        //            var settings = new JsonSerializerSettings
-        //            {
-        //                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        //            };
-
-        //            string itemTypesJson = JsonConvert.SerializeObject(itemTypes, settings);
-
-        //            // Send the JSON string to the client
-        //            streamWriter.WriteLine("GetListItemType|" + itemTypesJson);
-        //            streamWriter.Flush();
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"An error occurred while processing GetListItemType: {ex.Message}");
-        //        Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
-        //    }
-        //}
-
 
         private void GetItemById(Socket socket, int itemId)
         {
@@ -304,40 +274,29 @@ namespace Server
                 {
                     Bid bid = JsonConvert.DeserializeObject<Bid>(bidJson);
                     Item updatedItem = JsonConvert.DeserializeObject<Item>(itemJson);
-                    // Kiểm tra xem đã có bid khác với giá giống nhau chưa
-                    var existingBid = dbContext.Bids
-                        .Where(b => b.ItemId == bid.ItemId && b.BidPrice == bid.BidPrice)
-                        .FirstOrDefault();
-                    if (existingBid == null)
+
+                    Console.WriteLine(bid.BidPrice + "a - b" + updatedItem.CurrentPrice);
+                    // Thêm mới Bid vào cơ sở dữ liệu
+                    dbContext.Bids.Add(bid);
+                    dbContext.SaveChanges();
+
+                    // Cập nhật thông tin của Item trong cơ sở dữ liệu
+                    var existingItem = dbContext.Items.Find(updatedItem.ItemId);
+
+                    if (existingItem != null)
                     {
-                        // Thêm mới Bid vào cơ sở dữ liệu
-                        dbContext.Bids.Add(bid);
+                        // Nếu tồn tại, cập nhật thông tin của Item đã tồn tại
+                        existingItem.CurrentPrice = updatedItem.CurrentPrice;
                         dbContext.SaveChanges();
 
-                        // Cập nhật thông tin của Item trong cơ sở dữ liệu
-                        var existingItem = dbContext.Items.Find(updatedItem.ItemId);
-
-                        if (existingItem != null)
-                        {
-                            // Nếu tồn tại, cập nhật thông tin của Item đã tồn tại
-                            existingItem.CurrentPrice = updatedItem.CurrentPrice;
-                            dbContext.SaveChanges();
-
-                            streamWriter.WriteLine("Added new Bid and updated Item");
-                            streamWriter.Flush();
-                        }
-                        else
-                        {
-                            streamWriter.WriteLine("Item not found");
-                            streamWriter.Flush();
-                        }
+                        streamWriter.WriteLine("Added new Bid and updated Item");
+                        streamWriter.Flush();
                     }
                     else
                     {
-                        streamWriter.WriteLine("This price already exists");
+                        streamWriter.WriteLine("Item not found");
                         streamWriter.Flush();
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -388,32 +347,33 @@ namespace Server
             using (StreamReader streamReader = new StreamReader(networkStream))
             {
                 List<Item> itemList = new List<Item>();
+                // Get the current time
                 DateTime currentTime = DateTime.Now;
+
                 if (memberId != 0)
                 {
-                    // Retrieve the items from the database based on the logged-in member
+
                     itemList = dbContext.Items
                         .Where(item => item.SellerId == memberId && item.EndDateTime > currentTime)
                         .ToList();
                 }
                 else
                 {
-                    // Retrieve all items from the database whose EndDateTime has not passed
                     itemList = dbContext.Items
                         .Where(item => item.EndDateTime > currentTime)
                         .ToList();
                 }
 
-                // Configure the JsonSerializer to handle reference loops
+
                 var settings = new JsonSerializerSettings
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 };
 
-                // Convert the list of items to a JSON string using the settings
+
                 string itemListJson = JsonConvert.SerializeObject(itemList, settings);
 
-                // Send the JSON string to the client
+
                 streamWriter.WriteLine("LoadItemList|" + itemListJson);
                 streamWriter.Flush();
             }
@@ -430,8 +390,8 @@ namespace Server
 
                 if (memberId != 0)
                 {
-                    // Retrieve the items from the database based on the logged-in member
-                    bidList = dbContext.Bids.Where(bid => bid.BidderId == memberId && bid.BidPrice > 0).ToList();
+
+                    bidList = dbContext.Bids.Where(bid => bid.BidderId == memberId).ToList();
                 }
                 else
                 {
@@ -439,51 +399,49 @@ namespace Server
                 }
 
 
-                // Configure the JsonSerializer to handle reference loops
+
                 var settings = new JsonSerializerSettings
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 };
 
-                // Convert the list of items to a JSON string using the settings
+
                 string bidListJson = JsonConvert.SerializeObject(bidList, settings);
 
-                // Send the JSON string to the client
+
                 streamWriter.WriteLine("LoadBidList|" + bidListJson);
                 streamWriter.Flush();
             }
         }
 
-        
-
         private void CheckAndSendEmails()
         {
             try
             {
-                // Get items whose EndDateTime has passed
+
                 var expiredItems = dbContext.Items.Where(item => item.EndDateTime <= DateTime.Now).ToList();
 
                 foreach (var item in expiredItems)
                 {
-                    // Get the winning bid for the expired item
+
                     var winningBid = dbContext.Bids
                         .Where(bid => bid.ItemId == item.ItemId && bid.BidPrice == item.CurrentPrice)
                         .FirstOrDefault();
 
                     if (winningBid != null)
                     {
-                        // Get the bidder information
+
                         var bidder = dbContext.Members.Find(winningBid.BidderId);
 
                         if (bidder != null)
                         {
-                            // Get the seller information
+
                             var seller = dbContext.Members.Find(item.SellerId);
 
-                            // Send email to the bidder
-                            sendmail(seller.Email, bidder?.Email,bidder?.Name, 
+
+                            sendmail(seller.Email, bidder?.Email, bidder?.Name,
                                 $"Congratulations! You have won the auction for the item: {item.ItemName} with price ${item.CurrentPrice} USD");
-                           
+
                         }
                     }
                 }
@@ -494,7 +452,7 @@ namespace Server
             }
         }
 
-        private void sendmail(string fromEmail, string toEmail,string name, string mess)
+        private void sendmail(string fromEmail, string toEmail, string name, string mess)
         {
             Console.WriteLine(fromEmail + " " + toEmail);
             SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
@@ -506,13 +464,10 @@ namespace Server
             mail.From = new MailAddress(fromEmail);
             mail.To.Add(toEmail);
             mail.Subject = "Auction Result" + name;
-            mail.Body = "Hello " + name +", \n" + mess;
+            mail.Body = "Hello " + name + ", \n" + mess;
 
             smtpClient.Send(mail);
         }
-
-
-
 
         private Member CheckAccount(string username, string password)
         {
@@ -533,6 +488,7 @@ namespace Server
             {
                 Console.WriteLine($"haha. An server error occurred: {ex.Message}");
                 Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+
             }
         }
     }
