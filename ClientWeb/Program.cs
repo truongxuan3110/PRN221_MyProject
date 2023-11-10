@@ -1,3 +1,7 @@
+using ClientWeb.Hubs;
+using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace ClientWeb
 {
     public class Program
@@ -8,7 +12,12 @@ namespace ClientWeb
 
             // Add services to the container.
             builder.Services.AddRazorPages();
-
+            builder.Services.AddSession();
+            builder.Services.AddSignalR();
+            builder.Services.AddDbContext<PRN221_ProjectContext>(opt =>
+            {
+                opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -27,7 +36,8 @@ namespace ClientWeb
             app.UseAuthorization();
 
             app.MapRazorPages();
-
+            app.UseSession();
+            app.MapHub<SignalRServer>("/signalRServer");
             app.Run();
         }
     }
