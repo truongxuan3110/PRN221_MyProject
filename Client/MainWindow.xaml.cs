@@ -29,25 +29,27 @@ namespace Client
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly PRN221_ProjectContext dbContext;
         private Member member;
         private TcpClient tcpClient;
         private StreamWriter streamWriter;
         private StreamReader streamReader;
-
+        private PRN221_ProjectContext dbContext;
         private List<Item> itemListCopy;
         private List<Item> searchedItemList;
         private List<Bid> bidListCopy;
 
         public MainWindow()
         {
+
             InitializeComponent();
             cbFilter.ItemsSource = filterItems;
             cboTimeFilter.ItemsSource = filterTime;
-            dbContext = new PRN221_ProjectContext();
             listAllItem.Visibility = Visibility.Collapsed;
             loginGrid.Visibility = Visibility.Visible;
             addItemGrid.Visibility = Visibility.Collapsed;
+            dbContext = new PRN221_ProjectContext();
+            cbItemTypes.ItemsSource = dbContext.ItemTypes.ToList();
+
             ConnectToServer();
         }
         List<string> filterItems = new List<string> { "All", "Your Items" };
@@ -56,7 +58,17 @@ namespace Client
         {
             listAllItem.Visibility = Visibility.Collapsed;
             addItemGrid.Visibility = Visibility.Visible;
-            cbItemTypes.ItemsSource = dbContext.ItemTypes.ToList();
+
+            //// Send JSON string to client
+            //streamWriter.WriteLine("GetListItemType|0");
+            //streamWriter.Flush();
+
+            //string listItemTypesJson = streamReader.ReadLine();
+
+            //List<ItemType> itemTypeList = JsonConvert.DeserializeObject<List<ItemType>>(listItemTypesJson);
+            //cbItemTypes.ItemsSource = itemTypeList;
+
+
         }
 
         private void cbFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -167,7 +179,7 @@ namespace Client
                     else
                     {
                         // Xử lý khi không nhận được dữ liệu từ server
-                        MessageBox.Show("Empty response from server.");
+                        // MessageBox.Show("Empty response from server.");
                         ConnectToServer();
                     }
 
@@ -181,6 +193,7 @@ namespace Client
 
         private void LoadListItemScreen(int memberId = 0)
         {
+
             // Send a request to the server to load the item list
             streamWriter.WriteLine("LoadItemList|" + memberId);
             streamWriter.Flush();
@@ -403,8 +416,15 @@ namespace Client
                 txtCurrentPrice.Content = item.CurrentPrice;
                 txtMinimumBidIncrement.Content = item.MinimumBidIncrement;
                 txtEndDateTime.Content = item.EndDateTime;
-                txtTimeRemaining.Content = Math.Round((item.EndDateTime - DateTime.Now).Value.TotalHours) >= 0 ?
-                    (Math.Round((item.EndDateTime - DateTime.Now).Value.TotalHours) + " hours") : (0 + " hours");
+                //txtTimeRemaining.Content = Math.Round((item.EndDateTime - DateTime.Now).Value.TotalHours) >= 0 ?
+                //    (Math.Round((item.EndDateTime - DateTime.Now).Value.TotalHours) + " hours") : (0 + " hours");
+
+                TimeSpan timeRemaining = (TimeSpan)(item.EndDateTime - DateTime.Now);
+
+                string formattedTime = string.Format("{0:D2} hours, {1:D2} minutes, {2:D2} seconds",
+                    timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds);
+
+                txtTimeRemaining.Content = timeRemaining.TotalHours >= 0 ? formattedTime : "0 hours";
             }
             else
             {
@@ -440,14 +460,19 @@ namespace Client
                                 {
                                     if (bidPrice >= (item.CurrentPrice + item.MinimumBidIncrement))
                                     {
-                                        Console.WriteLine("mlem ");
+
                                         item.CurrentPrice = bidPrice;
-                                       
-                                        Bid bid = new Bid();
-                                        bid.ItemId = item.ItemId;
-                                        bid.BidderId = 1;
-                                        bid.BidDateTime = DateTime.Now;
-                                        bid.BidPrice = bidPrice;
+                                        Console.WriteLine(item.CurrentPrice + " - " + bidPrice);
+
+
+                                        Bid bid = new Bid
+                                        {
+                                            ItemId = item.ItemId,
+                                            BidderId = member.MemberId,
+                                            BidDateTime = DateTime.Now,
+                                            BidPrice = bidPrice
+                                        };
+
 
                                         // Configure the JsonSerializer to handle reference loops
                                         var settings = new JsonSerializerSettings
@@ -460,14 +485,14 @@ namespace Client
                                         string newItemPriceJson = JsonConvert.SerializeObject(item, settings);
 
                                         // Send JSON string to client
-                                        streamWriter.WriteLine("AddNewBid|" + newBidJson+"|"+ newItemPriceJson);
+                                        streamWriter.WriteLine("AddNewBid|" + newBidJson + "|" + newItemPriceJson);
                                         streamWriter.Flush();
 
 
                                         string resultAdded = streamReader.ReadLine();
                                         MessageBox.Show(resultAdded);
                                         LoadDataBidDetails(item.ItemId);
-                                       
+
                                     }
                                     else
                                     {
@@ -493,7 +518,8 @@ namespace Client
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Bid Item");
+                Console.WriteLine($"An client error occurred while adding new Bid and updating Item: {ex.Message}");
+                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
             }
         }
 
