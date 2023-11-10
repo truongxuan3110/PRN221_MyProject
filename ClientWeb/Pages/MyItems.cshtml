@@ -1,9 +1,8 @@
 ﻿@page
-@model ClientWeb.Pages.ListAllItemsModel
+@model ClientWeb.Pages.MyItemsModel
 @{
-    int? userId = HttpContext.Session.GetInt32("memberId");
 }
-<h2>List of Items</h2>
+<h2>My Items</h2>
 <form>
     <button class="btn-secondary" asp-page="/AddItem">Add Item</button>
     <button class="btn-secondary" asp-page="/ListBids">List Bids</button>

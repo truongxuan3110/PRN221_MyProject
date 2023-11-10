@@ -77,7 +77,7 @@
             </ListView>
         </Grid>
 
-        <Grid x:Name="addItemGrid" Visibility="Visible">
+        <Grid x:Name="addItemGrid" Visibility="Collapsed">
             <Grid.RowDefinitions>
                 <RowDefinition Height="100"/>
                 <RowDefinition Height="70"/>
@@ -136,7 +136,7 @@
                     
                      />
         </Grid>
-        <Grid x:Name="listBidsGrid" Visibility="Visible">
+        <Grid x:Name="listBidsGrid" Visibility="Collapsed">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Label FontSize="20" FontWeight="DemiBold">List Bids of</Label>

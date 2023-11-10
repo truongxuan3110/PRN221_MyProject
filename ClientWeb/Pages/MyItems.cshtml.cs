@@ -5,29 +5,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClientWeb.Pages
 {
-    public class ListBidsModel : PageModel
+    public class MyItemsModel : PageModel
     {
         private readonly PRN221_ProjectContext _context;
-        public List<Bid> bids { get; set; } = new List<Bid>();
+        public List<Item> items { get; set; } = new List<Item>();
         [BindProperty]
         public string item { get; set; } = "";
-        public Member user = new Member();
-        public ListBidsModel(PRN221_ProjectContext context)
+        public MyItemsModel(PRN221_ProjectContext context)
         {
             _context = context;
         }
         public void OnGet(string item)
         {
             int? userId = HttpContext.Session.GetInt32("memberId");
-            user = _context.Members.SingleOrDefault(x => x.MemberId == userId);
             if (!string.IsNullOrEmpty(item))
             {
-                bids = _context.Bids.Include(x => x.Item).Where(x => x.BidderId == user.MemberId && x.Item.ItemName.Contains(item) && x.BidPrice > 0).ToList();
+                items = _context.Items.Include(x => x.ItemType).Include(x => x.Seller).Where(x => x.ItemName.Contains(item) && x.SellerId==userId).ToList();
                 ViewData["item"] = item;
             }
             else
             {
-                bids = _context.Bids.Include(x => x.Item).Where(x => x.BidderId == user.MemberId && x.BidPrice > 0).ToList();
+                items = _context.Items.Include(x => x.ItemType).Include(x => x.Seller).Where(x => x.SellerId == userId).ToList();
             }
         }
     }

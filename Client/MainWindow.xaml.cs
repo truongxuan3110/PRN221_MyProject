@@ -202,7 +202,7 @@ namespace Client
 
                 // Update the UI with the loaded item list
                 lvItems.ItemsSource = itemList;
-
+                cbFilter.SelectedIndex = 0;
                 // Đã đăng nhập thành công, sử dụng thông tin của đối tượng Member ở đây
                 listAllItem.Visibility = Visibility.Visible;
                 loginGrid.Visibility = Visibility.Collapsed;
@@ -304,7 +304,7 @@ namespace Client
 
                 // Update the UI with the loaded item list
                 listBids.ItemsSource = bidListCopy;
-
+                cboTimeFilter.SelectedIndex = 0;
                 // Đã đăng nhập thành công, sử dụng thông tin của đối tượng Member ở đây
                 listAllItem.Visibility = Visibility.Collapsed;
                 listBidsGrid.Visibility = Visibility.Visible;
@@ -445,7 +445,7 @@ namespace Client
                                        
                                         Bid bid = new Bid();
                                         bid.ItemId = item.ItemId;
-                                        bid.BidderId = 1;
+                                        bid.BidderId = member.MemberId;
                                         bid.BidDateTime = DateTime.Now;
                                         bid.BidPrice = bidPrice;
 

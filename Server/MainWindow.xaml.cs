@@ -258,16 +258,16 @@ namespace Server
                     Item updatedItem = JsonConvert.DeserializeObject<Item>(itemJson);
 
                     // Thêm mới Bid vào cơ sở dữ liệu
-                    dbContext.Bids.Add(bid);
-                    dbContext.SaveChanges();
+                    
 
                     // Cập nhật thông tin của Item trong cơ sở dữ liệu
-                    var existingItem = dbContext.Items.Find(updatedItem.ItemId);
-
+                    var existingItem = dbContext.Items.SingleOrDefault(x => x.ItemId == updatedItem.ItemId);
                     if (existingItem != null)
                     {
                         // Nếu tồn tại, cập nhật thông tin của Item đã tồn tại
                         existingItem.CurrentPrice = updatedItem.CurrentPrice;
+                        dbContext.Items.Update(existingItem);
+                        dbContext.Bids.Add(bid);
                         dbContext.SaveChanges();
 
                         streamWriter.WriteLine("Added new Bid and updated Item");
@@ -365,7 +365,7 @@ namespace Server
                 if (memberId != 0)
                 {
                     // Retrieve the items from the database based on the logged-in member
-                    bidList = dbContext.Bids.Where(bid => bid.BidderId == memberId).ToList();
+                    bidList = dbContext.Bids.Where(bid => bid.BidderId == memberId && bid.BidPrice > 0).ToList();
                 }
                 else
                 {
