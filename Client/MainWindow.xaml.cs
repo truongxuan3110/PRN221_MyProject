@@ -164,12 +164,12 @@ namespace Client
                             ConnectToServer();
                         }
                     }
-                    else
-                    {
-                        // Xử lý khi không nhận được dữ liệu từ server
-                        MessageBox.Show("Empty response from server.");
-                        ConnectToServer();
-                    }
+                    //else
+                    //{
+                    //    // Xử lý khi không nhận được dữ liệu từ server
+                    //    MessageBox.Show("Empty response from server.");
+                    //    ConnectToServer();
+                    //}
 
                 }
             }
