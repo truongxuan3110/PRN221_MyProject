@@ -1,0 +1,76 @@
+﻿@page
+@model ClientWeb.Pages.MyItemsModel
+@{
+}
+<h2>My Items</h2>
+<form>
+    <button class="btn-secondary" asp-page="/AddItem">Add Item</button>
+    <button class="btn-secondary" asp-page="/ListBids">List Bids</button>
+    <button class="btn-secondary" asp-page="/MyItems">My Items</button>
+</form>
+<form method="get">
+    <input type="text" name="item" value="@ViewData["item"]" />
+    <button type="submit" class="btn-secondary">Search</button>
+</form>
+<table id="tableBody" class="table">
+    <thead>
+        <tr>
+            <th>
+                Item Type
+            </th>
+            <th>
+                Item Name
+            </th>
+            <th>
+                Item Description
+            </th>
+            <th>
+                Seller
+            </th>
+            <th>
+                MinimumBidIncrement
+            </th>
+            <th>
+                EndDateTime
+            </th>
+            <th>
+                CurrentPrice
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.items)
+        {
+            <tr>
+                <td>
+                    @item.ItemType.ItemTypeName
+                </td>
+                <td>
+                    @item.ItemName
+                </td>
+                <td>
+                    @item.ItemDescription
+                </td>
+                <td>
+                    @item.Seller.Name
+                </td>
+                <td>
+                    @item.MinimumBidIncrement
+                </td>
+                <td>
+                    @item.EndDateTime
+                </td>
+                <td>
+                    @item.CurrentPrice
+                </td>
+                <td>
+                    <a asp-page="/BidDetail" asp-route-id="@item.ItemId">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<form>
+    <button class="btn-secondary" asp-page="/ListAllItems">Cancel</button>
+</form>

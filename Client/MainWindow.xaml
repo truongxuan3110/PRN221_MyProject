@@ -7,6 +7,223 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid x:Name="loginGrid" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Content="Login"  Margin="20" Background="Azure" Foreground="Red" 
+                   FontWeight="Bold" HorizontalContentAlignment="Center" FontSize="25" />
+            <Label Grid.Row="1" Grid.Column="1" Name="lbUsername" Content="Username"  FontSize="15" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+            <TextBox Grid.Row="1" Grid.Column="2" Name="tbUsername" HorizontalAlignment="Left"
+                 Width="150" Height="25" VerticalAlignment="Center"  />
+            <Label Grid.Row="2" Grid.Column="1" Name="lbPassword" Content="Password"   FontSize="15" FontWeight="Bold" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+            <TextBox Grid.Row="2" Grid.Column="2" Name="tbPassword" HorizontalAlignment="Left"
+                 Width="150" Height="25" VerticalAlignment="Center"  />
+
+            <Button Margin="10,20,0,0" Grid.Row="3"  Content="LOGIN" Name="btnLogin" Width="80" Height="30" 
+                 HorizontalAlignment="Left" Grid.Column="2" VerticalAlignment="Top" Click="btnLogin_Click"  />
+        </Grid>
+
+        <Grid x:Name="listAllItem" Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Content="List of Items"  Margin="20" Background="Azure" Foreground="Red" 
+                   FontWeight="Bold" HorizontalContentAlignment="Center" FontSize="25" />
+            <Button  Margin="0,0,20,0"  Content="Add Item" Grid.Row="1" Grid.Column="0"
+                     Name="AddItemBtn"  Width="80" Height="30" HorizontalAlignment="Left" Click="AddItemBtn_Click" />
+            <Button  Margin="0,0,20,0"  Content="List Bids" Grid.Row="1" Grid.Column="0"
+         Name="ListBidsBtn"  Width="80" Height="30" HorizontalAlignment="Right" Click="ListBidsBtn_Click" />
+
+            <TextBox Grid.Row="1" Grid.Column="1" Name="tbSearch" HorizontalAlignment="Center" Width="300" Height="30" 
+                     VerticalAlignment="Center" Grid.ColumnSpan="2" TextChanged="tbSearch_TextChanged"
+                     />
+            <ComboBox  Grid.Row="1" Grid.Column="3" x:Name="cbFilter"  
+                       HorizontalAlignment="Center" Width="180" Height="30" SelectionChanged="cbFilter_SelectionChanged"/>
+
+            <ListView x:Name="lvItems" Grid.Row="2" Grid.ColumnSpan="4" Margin="10" Height="Auto" Width="Auto" SelectionChanged="lvItems_SelectionChanged">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Item Type" Width="100" DisplayMemberBinding="{Binding Path=ItemTypeId}"/>
+                        <GridViewColumn Header="Item Name" Width="110" DisplayMemberBinding="{Binding Path=ItemName}"/>
+                        <GridViewColumn Header="Item Description" Width="130" DisplayMemberBinding="{Binding Path=ItemDescription}"/>
+                        <GridViewColumn Header="Seller" Width="100" DisplayMemberBinding="{Binding Path=SellerId}"/>
+                        <GridViewColumn Header="MinimumBidIncrement" Width="130" DisplayMemberBinding="{Binding Path=MinimumBidIncrement}"/>
+                        <GridViewColumn Header="EndDateTime" Width="100" DisplayMemberBinding="{Binding Path=EndDateTime}"/>
+                        <GridViewColumn Header="CurrentPrice" Width="100" DisplayMemberBinding="{Binding Path=CurrentPrice}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+
+        <Grid x:Name="addItemGrid" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="70"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="240" />
+                <ColumnDefinition Width="210" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Content="Add New Item For Auction"  Margin="20" Background="Azure" Foreground="Red" 
+                   FontWeight="Bold" HorizontalContentAlignment="Center" FontSize="25" VerticalAlignment="Center"/>
+
+            <Label Grid.Row="1" Grid.Column="0"  Content="Item Type: " 
+                   FontWeight="Bold" HorizontalContentAlignment="Left" FontSize="17"  VerticalAlignment="Center"/>
+            <ComboBox  Grid.Row="1" Grid.Column="1" x:Name="cbItemTypes"  
+                       HorizontalAlignment="Left" Width="200" Height="30"  VerticalAlignment="Center"
+                       SelectedValuePath="ItemTypeId"  DisplayMemberPath="ItemTypeName" ItemsSource="{Binding ItemType}"
+                  SelectedValue="{Binding ItemTypeId, Mode=OneWay}" 
+                       
+                       />
+
+            <Label Grid.Row="2" Grid.Column="0"  Content="Item Name: " 
+                   FontWeight="Bold" HorizontalContentAlignment="Left" FontSize="17"  VerticalAlignment="Center"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Name="tbItemName" HorizontalAlignment="Left" 
+                     Width="200" Height="30"   VerticalAlignment="Center"/>
+            
+            <Label Grid.Row="3" Grid.Column="0"  Content="Item Description: " 
+                   FontWeight="Bold" HorizontalContentAlignment="Left" FontSize="17"  VerticalAlignment="Center"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Name="tbDescription" HorizontalAlignment="Left" 
+                         Width="200" Height="40"  VerticalAlignment="Center"/>
+
+            <Label Grid.Row="1" Grid.Column="2"  Content="Minimum Bid Increment: " 
+                   FontWeight="Bold" HorizontalContentAlignment="Left" FontSize="17"  VerticalAlignment="Center"/>
+            <TextBox Grid.Row="1" Grid.Column="3" Name="tbBidIncrement" HorizontalAlignment="Center" 
+                     Width="180" Height="30"   VerticalAlignment="Center"/>
+            <Label Grid.Row="2" Grid.Column="2"  Content="End Date Time: " 
+                   FontWeight="Bold" HorizontalContentAlignment="Left" FontSize="17"  VerticalAlignment="Center"/>
+            <DatePicker Name="dpEnd" Grid.Row="2" Grid.Column="3" Width="180" Height="30" 
+                        HorizontalAlignment="Center"  VerticalAlignment="Center"/>
+
+            <Label Grid.Row="3" Grid.Column="2"  Content="Current Price: " 
+                   FontWeight="Bold" HorizontalContentAlignment="Left" FontSize="17"  VerticalAlignment="Center"/>
+            <TextBox Grid.Row="3" Grid.Column="3" Name="tbCurrentPrice" HorizontalAlignment="Center" 
+                     Width="180" Height="30"   VerticalAlignment="Center" Text="0"
+                     IsReadOnly="True"
+                     />
+
+            <Button  Margin="0,0,20,0"  Content="Add" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4"
+                     Name="AddBtn"  Width="100" Height="30" HorizontalAlignment="Center" Click="AddBtn_Click" 
+                    
+                     />
+        </Grid>
+        <Grid x:Name="listBidsGrid" Visibility="Collapsed">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Label FontSize="20" FontWeight="DemiBold">List Bids of</Label>
+                    <Label FontSize="20" FontWeight="DemiBold" Foreground="Red" x:Name="lbName"></Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBox x:Name="txtItemSearch" Width="270"></TextBox>
+                    <Button Width="100" Margin="20 0" Name="searchBtn" Click="searchBtn_Click">Search</Button>
+                    <ComboBox x:Name="cboTimeFilter" Width="200" Margin="30 0 0 0" SelectionChanged="cboTimeFilter_SelectionChanged" />
+                </StackPanel>
+                <ListView x:Name="listBids" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 15 0 10">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Bid ID" Width="100" DisplayMemberBinding="{Binding Path=BidId}"/>
+                            <GridViewColumn Header="Item Name" Width="200" DisplayMemberBinding="{Binding Path=Item.ItemName}" />
+                            <GridViewColumn Header="Bid date time" Width="200" DisplayMemberBinding="{Binding Path=BidDateTime}"/>
+                            <GridViewColumn Header="Bid price" Width="130" DisplayMemberBinding="{Binding Path=BidPrice}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <Button Width="100" Name="cancelListBidsBtn" Click="cancelListBidsBtn_Click">Cancel</Button>
+            </StackPanel>
+        </Grid>
+        <Grid x:Name="bidDetailsGrid" Visibility="Collapsed">
+            <StackPanel Orientation="Vertical">
+                <Label FontSize="20" FontWeight="DemiBold" HorizontalContentAlignment="Center">Item Search Result/Bid Screen</Label>
+                <StackPanel Orientation="Horizontal" Height="Auto" VerticalAlignment="Top">
+                    <StackPanel Width="300" VerticalAlignment="Top" Orientation="Vertical" HorizontalAlignment="Left" Height="Auto" Margin="0 40">
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Bidder number:</Label>
+                            <Label x:Name="txtBidId"></Label>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Type name:</Label>
+                            <Label x:Name="txtTypeName"></Label>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Item number:</Label>
+                            <Label x:Name="txtItemId"></Label>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Item description:</Label>
+                            <Label x:Name="txtItemDescription"></Label>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Current price:</Label>
+                            <Label x:Name="txtCurrentPrice"></Label>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>End date time:</Label>
+                            <Label x:Name="txtEndDateTime"></Label>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Width="300" VerticalAlignment="Top" Orientation="Vertical" HorizontalAlignment="Left" Height="Auto" Margin="0 40">
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Bidder:</Label>
+                            <Label x:Name="txtBidderName"></Label>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Item name:</Label>
+                            <Label x:Name="txtItemName"></Label>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Seller:</Label>
+                            <Label x:Name="txtSellerName"></Label>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Minimum bid increment:</Label>
+                            <Label x:Name="txtMinimumBidIncrement"></Label>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Time remaining:</Label>
+                            <Label x:Name="txtTimeRemaining"></Label>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label>Bid Price:</Label>
+                    <TextBox x:Name="txtBidPrice" Width="220"></TextBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button Width="100" Margin="60 20 0 0" Name="bidBtn" Click="bidBtn_Click" >Bid</Button>
+                    <Button Width="100" Margin="20 20 0 0" Name="bidDetailsCancelBtn" Click="bidDetailsCancelBtn_Click" >Cancel</Button>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
 
     </Grid>
+    
 </Window>
