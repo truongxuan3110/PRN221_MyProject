@@ -215,7 +215,7 @@ namespace Client
 
                 // Update the UI with the loaded item list
                 lvItems.ItemsSource = itemList;
-
+                cbFilter.SelectedIndex = 0;
                 // Đã đăng nhập thành công, sử dụng thông tin của đối tượng Member ở đây
                 listAllItem.Visibility = Visibility.Visible;
                 loginGrid.Visibility = Visibility.Collapsed;
@@ -317,7 +317,7 @@ namespace Client
 
                 // Update the UI with the loaded item list
                 listBids.ItemsSource = bidListCopy;
-
+                cboTimeFilter.SelectedIndex = 0;
                 // Đã đăng nhập thành công, sử dụng thông tin của đối tượng Member ở đây
                 listAllItem.Visibility = Visibility.Collapsed;
                 listBidsGrid.Visibility = Visibility.Visible;
@@ -472,7 +472,6 @@ namespace Client
                                             BidDateTime = DateTime.Now,
                                             BidPrice = bidPrice
                                         };
-
 
                                         // Configure the JsonSerializer to handle reference loops
                                         var settings = new JsonSerializerSettings

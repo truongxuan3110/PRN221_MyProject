@@ -304,7 +304,6 @@ namespace Server
                 {
                     Bid bid = JsonConvert.DeserializeObject<Bid>(bidJson);
                     Item updatedItem = JsonConvert.DeserializeObject<Item>(itemJson);
-
                     // Kiểm tra xem đã có bid khác với giá giống nhau chưa
                     var existingBid = dbContext.Bids
                         .Where(b => b.ItemId == bid.ItemId && b.BidPrice == bid.BidPrice)
@@ -432,7 +431,7 @@ namespace Server
                 if (memberId != 0)
                 {
                     // Retrieve the items from the database based on the logged-in member
-                    bidList = dbContext.Bids.Where(bid => bid.BidderId == memberId).ToList();
+                    bidList = dbContext.Bids.Where(bid => bid.BidderId == memberId && bid.BidPrice > 0).ToList();
                 }
                 else
                 {

@@ -1,0 +1,55 @@
+﻿@page
+@model ClientWeb.Pages.BidDetailModel
+@{
+}
+<h2>Bid Details</h2>
+
+<form method="post">
+<div>
+    Bidder Number:
+    <input type="text" name="txtBidderNumber" readonly value="@Model.bidder.MemberId" />
+    Bidder:
+    <input type="text" name="txtBidder" readonly value="@Model.bidder.Name" />
+</div>
+<div>
+    Type Name:
+    <input type="text" name="txtTypeName" readonly value="@Model.itemType.ItemTypeName" />
+    Item Name:
+    <input type="text" name="txtItemName" readonly value="@Model.item.ItemName" />
+</div>
+<div>
+    Item Number:
+    <input type="text" name="txtItemNumber" readonly value="@Model.item.ItemId" />
+    Seller:
+    <input type="text" name="txtSeller" readonly value="@Model.seller.Name" />
+</div>
+<div>
+    Item Description:
+    <input type="text" name="txtItemDescription" readonly value="@Model.item.ItemDescription" />
+    Minimum bid increment:
+    <input type="text" name="txtMinimumBidIncrement" readonly value="@Model.item.MinimumBidIncrement" />
+</div>
+<div>
+    Current Price:
+    <input type="text" name="txtCurrentPrice" readonly value="@Model.item.CurrentPrice" />
+    Time Remaining:
+    <input type="text" name="txtTimeRemaining" readonly value="@Model.timeRemaining" /> hours
+</div>
+<div>
+    End Date Time:
+    <input type="datetime" name="txtEndDateTime" readonly value="@Model.item.EndDateTime" />
+</div>
+    Bid Price:
+    <input type="number" name="txtBidPrice" />
+    <button type="submit">Bid</button>
+</form>
+
+<form>
+    <button class="btn-secondary" asp-page="/ListAllItems">Cancel</button>
+</form>
+@if (TempData["AlertMessage"] != null)
+{
+    <script>
+        alert('@TempData["AlertMessage"]');
+    </script>
+}
