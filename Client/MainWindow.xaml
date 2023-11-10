@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Grid x:Name="loginGrid" Visibility="Visible">
+        <Grid x:Name="loginGrid" Visibility="Collapsed">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -77,7 +77,7 @@
             </ListView>
         </Grid>
 
-        <Grid x:Name="addItemGrid" Visibility="Collapsed">
+        <Grid x:Name="addItemGrid" Visibility="Visible">
             <Grid.RowDefinitions>
                 <RowDefinition Height="100"/>
                 <RowDefinition Height="70"/>
