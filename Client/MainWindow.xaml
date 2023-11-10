@@ -35,7 +35,7 @@
                  HorizontalAlignment="Left" Grid.Column="2" VerticalAlignment="Top" Click="btnLogin_Click"  />
         </Grid>
 
-        <Grid x:Name="listAllItem" Visibility="Collapsed">
+        <Grid x:Name="listAllItem" Visibility="Visible">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
