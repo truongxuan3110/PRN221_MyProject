@@ -1,0 +1,46 @@
+﻿@page
+@model ClientWeb.Pages.ListBidsModel
+@{
+}
+<h2>List Bids of</h2>
+<form method="get">
+    <input type="text" name="item" value="@ViewData["item"]" />
+    <button type="submit" class="btn-secondary">Search</button>
+</form>
+<table id="tableBody" class="table">
+    <thead>
+        <tr>
+            <th>
+                Bid ID
+            </th>
+            <th>
+                Item Name
+            </th>
+            <th>
+                Bid Date Time
+            </th>
+            <th>
+                Bid Price
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.bids)
+        {
+            <tr>
+                <td>
+                    @item.BidId
+                </td>
+                <td>
+                    @item.Item.ItemName
+                </td>
+                <td>
+                    @item.BidDateTime
+                </td>
+                <td>
+                    @item.BidPrice
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

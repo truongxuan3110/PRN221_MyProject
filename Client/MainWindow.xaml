@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Grid x:Name="loginGrid" Visibility="Visible">
+        <Grid x:Name="loginGrid" Visibility="Collapsed">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -136,7 +136,7 @@
                     
                      />
         </Grid>
-        <Grid x:Name="listBidsGrid" Visibility="Collapsed">
+        <Grid x:Name="listBidsGrid" Visibility="Visible">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Label FontSize="20" FontWeight="DemiBold">List Bids of</Label>

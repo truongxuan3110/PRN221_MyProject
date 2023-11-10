@@ -1,0 +1,40 @@
+﻿@page
+@model ClientWeb.Pages.AddItemModel
+@{
+}
+<h2>Add New Item For Auction</h2>
+<form method="post">
+    <div class="form-group">
+    <label>
+        Item type:
+    </label>
+        <select asp-for="SelectedItemType">
+            <option value="">-- Chọn một mục --</option>
+            @foreach (var item in Model.itemTypes)
+            {
+                <option value="@item.ItemTypeId">@item.ItemTypeName</option>
+            }
+        </select>
+    <div>
+        Item name:
+        <input type="text" name="txtItemName" />
+    </div>
+    <div>
+        Item description:
+        <input type="text" name="txtItemDescription" />
+    </div>
+    <div>
+        Minimum Bid Increment:
+        <input type="number" name="txtMinimumBidIncrement" />
+    </div>
+    <div>
+        End Date Time:
+        <input type="datetime-local" name="txtEndDateTime" />
+    </div>
+    <div>
+        Current Price:
+            <input type="number" name="txtCurrentPrice" disabled="disabled" value="0" />
+    </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+</form>
